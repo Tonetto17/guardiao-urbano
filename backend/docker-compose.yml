@@ -1,0 +1,29 @@
+services:
+  postgres:
+    image: postgis/postgis:16-3.4
+    container_name: guardiao_postgres
+    environment:
+      POSTGRES_DB: guardiao_urbano
+      POSTGRES_USER: guardiao
+      POSTGRES_PASSWORD: guardiao
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: guardiao_rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  redis:
+    image: redis:7
+    container_name: guardiao_redis
+    ports:
+      - "6380:6379"
+
+volumes:
+  postgres_data:
