@@ -8,7 +8,7 @@ O GuardiãoUrbano é um aplicativo desenvolvido como parte das Atividades Práti
 
 O aplicativo permite que usuários registrem problemas ambientais encontrados em áreas urbanas, utilizando fotografia, localização e informações sobre a ocorrência.
 
-As ocorrências são enviadas para o servidor, onde podem ser armazenadas, processadas e analisadas por um administrador.
+As ocorrências são enviadas para o servidor, onde podem ser armazenadas, processadas e analisadas por um administrador
 
 ## 🎯 Objetivo
 
