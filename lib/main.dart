@@ -1,4 +1,4 @@
-
+﻿
 
 import 'dart:convert';
 
@@ -37,9 +37,9 @@ Future<void> inicializarNotificacoes() async {
 Future<void> mostrarNotificacaoStatus(String novoStatus) async {
   const androidDetails = AndroidNotificationDetails(
     'status_ocorrencias',
-    'Atualizações de ocorrências',
+    'AtualizaÃ§Ãµes de ocorrÃªncias',
     channelDescription:
-    'Notificações sobre alterações no status das suas ocorrências.',
+    'NotificaÃ§Ãµes sobre alteraÃ§Ãµes no status das suas ocorrÃªncias.',
     importance: Importance.high,
     priority: Priority.high,
   );
@@ -50,9 +50,9 @@ Future<void> mostrarNotificacaoStatus(String novoStatus) async {
 
   await notificacoes.show(
     id: DateTime.now().millisecondsSinceEpoch.remainder(2147483647),
-    title: 'GuardiãoUrbano',
+    title: 'GuardiÃ£oUrbano',
     body:
-    'Sua ocorrência foi atualizada para ${nomeStatus(novoStatus)}.',
+    'Sua ocorrÃªncia foi atualizada para ${nomeStatus(novoStatus)}.',
     notificationDetails: detalhes,
   );
 }
@@ -75,7 +75,7 @@ class GuardiaoUrbanoApp extends StatelessWidget {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'GuardiãoUrbano',
+      title: 'GuardiÃ£oUrbano',
       theme: ThemeData(
         useMaterial3: true,
         scaffoldBackgroundColor: fundo,
@@ -97,7 +97,7 @@ class GuardiaoUrbanoApp extends StatelessWidget {
 
 String formatarDataHora(dynamic valor) {
   if (valor == null) {
-    return 'Data não informada';
+    return 'Data nÃ£o informada';
   }
 
   try {
@@ -117,11 +117,11 @@ String nomeStatus(String status) {
     case 'ABERTA':
       return 'Aberta';
     case 'EM_ANALISE':
-      return 'Em análise';
+      return 'Em anÃ¡lise';
     case 'EM_ATENDIMENTO':
       return 'Em atendimento';
     case 'CONCLUIDA':
-      return 'Concluída';
+      return 'ConcluÃ­da';
     case 'PENDENTE':
       return 'Pendente';
     default:
@@ -190,13 +190,13 @@ Future<String> buscarEndereco(double latitude, double longitude) async {
       }
 
       return dados['display_name']?.toString() ??
-          'Endereço não identificado';
+          'EndereÃ§o nÃ£o identificado';
     }
   } catch (erro) {
-    return 'Endereço indisponível no momento';
+    return 'EndereÃ§o indisponÃ­vel no momento';
   }
 
-  return 'Endereço não identificado';
+  return 'EndereÃ§o nÃ£o identificado';
 }
 
 class LoginPage extends StatefulWidget {
@@ -219,10 +219,12 @@ class _LoginPageState extends State<LoginPage> {
 
     try {
       final resposta = await http.post(
-        Uri.parse('http://10.0.2.2:8000/auth/login'),
-        headers: {'Content-Type': 'application/json'},
+        Uri.parse('http://192.168.0.247:8000/auth/login'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: jsonEncode({
-          'email': emailController.text,
+          'email': emailController.text.trim(),
           'senha': senhaController.text,
         }),
       );
@@ -269,7 +271,7 @@ class _LoginPageState extends State<LoginPage> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Não foi possível conectar ao servidor'),
+          content: Text('NÃ£o foi possÃ­vel conectar ao servidor'),
         ),
       );
     } finally {
@@ -307,7 +309,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 20),
                 const Text(
-                  'GuardiãoUrbano',
+                  'GuardiÃ£oUrbano',
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
@@ -421,7 +423,7 @@ class _LoginPageState extends State<LoginPage> {
                     );
                   },
                   child: const Text(
-                    'Ainda não possui uma conta? Cadastre-se',
+                    'Ainda nÃ£o possui uma conta? Cadastre-se',
                     style: TextStyle(
                       color: Color(0xFF1B5E20),
                       fontWeight: FontWeight.w600,
@@ -468,7 +470,7 @@ class _CadastroPageState extends State<CadastroPage> {
     if (senhaController.text != confirmarSenhaController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('As senhas não coincidem'),
+          content: Text('As senhas nÃ£o coincidem'),
         ),
       );
       return;
@@ -480,11 +482,13 @@ class _CadastroPageState extends State<CadastroPage> {
 
     try {
       final resposta = await http.post(
-        Uri.parse('http://10.0.2.2:8000/auth/register'),
-        headers: {'Content-Type': 'application/json'},
+        Uri.parse('http://192.168.0.247:8000/auth/register'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: jsonEncode({
-          'nome': nomeController.text,
-          'email': emailController.text,
+          'nome': nomeController.text.trim(),
+          'email': emailController.text.trim(),
           'senha': senhaController.text,
         }),
       );
@@ -519,7 +523,7 @@ class _CadastroPageState extends State<CadastroPage> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Não foi possível conectar ao servidor'),
+          content: Text('NÃ£o foi possÃ­vel conectar ao servidor'),
         ),
       );
     } finally {
@@ -575,7 +579,7 @@ class _CadastroPageState extends State<CadastroPage> {
               ),
               const SizedBox(height: 6),
               const Text(
-                'Cadastre-se para registrar ocorrências na sua cidade.',
+                'Cadastre-se para registrar ocorrÃªncias na sua cidade.',
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.black54,
@@ -795,7 +799,7 @@ class _MapaPageState extends State<MapaPage> {
         backgroundColor: const Color(0xFFF5F7F5),
         appBar: AppBar(
           title: const Text(
-            'GuardiãoUrbano',
+            'GuardiÃ£oUrbano',
             style: TextStyle(fontWeight: FontWeight.w600),
           ),
           centerTitle: true,
@@ -820,7 +824,7 @@ class _MapaPageState extends State<MapaPage> {
       backgroundColor: const Color(0xFFF5F7F5),
       appBar: AppBar(
         title: const Text(
-          'GuardiãoUrbano',
+          'GuardiÃ£oUrbano',
           style: TextStyle(fontWeight: FontWeight.w600),
         ),
         centerTitle: true,
@@ -829,7 +833,7 @@ class _MapaPageState extends State<MapaPage> {
         elevation: 0,
         actions: [
           IconButton(
-            tooltip: 'Minhas ocorrências',
+            tooltip: 'Minhas ocorrÃªncias',
             onPressed: () {
               Navigator.push(
                 context,
@@ -919,7 +923,7 @@ class _MapaPageState extends State<MapaPage> {
                   SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      'Sua localização atual',
+                      'Sua localizaÃ§Ã£o atual',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                       ),
@@ -968,7 +972,7 @@ class _MapaPageState extends State<MapaPage> {
             },
             icon: const Icon(Icons.add_location_alt_outlined),
             label: const Text(
-              'Nova ocorrência',
+              'Nova ocorrÃªncia',
               style: TextStyle(fontWeight: FontWeight.w600),
             ),
           ),
@@ -1001,7 +1005,7 @@ class _NovaOcorrenciaPageState extends State<NovaOcorrenciaPage> {
   bool carregandoCategorias = true;
   bool enviando = false;
   XFile? foto;
-  String endereco = 'Obtendo endereço...';
+  String endereco = 'Obtendo endereÃ§o...';
 
   @override
   void initState() {
@@ -1013,22 +1017,34 @@ class _NovaOcorrenciaPageState extends State<NovaOcorrenciaPage> {
   Future<void> carregarCategorias() async {
     try {
       final resposta = await http.get(
-        Uri.parse('http://10.0.2.2:8000/categorias/'),
+        Uri.parse('http://192.168.0.247:8000/categorias/'),
       );
+
       if (!mounted) return;
-      if (resposta.statusCode == 200) {
-        setState(() {
-          categorias = List<Map<String, dynamic>>.from(jsonDecode(resposta.body));
-          carregandoCategorias = false;
-        });
-      } else {
-        setState(() => carregandoCategorias = false);
+
+      if (resposta.statusCode != 200) {
+        throw Exception('Falha ao carregar categorias: ${resposta.statusCode}');
       }
+
+      final dados = List<Map<String, dynamic>>.from(
+        jsonDecode(resposta.body),
+      );
+
+      setState(() {
+        categorias = dados;
+        carregandoCategorias = false;
+      });
     } catch (erro) {
       if (!mounted) return;
-      setState(() => carregandoCategorias = false);
+
+      setState(() {
+        carregandoCategorias = false;
+      });
+
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Nao foi possivel carregar as categorias')),
+        const SnackBar(
+          content: Text('NÃ£o foi possÃ­vel carregar as categorias. Verifique a conexÃ£o.'),
+        ),
       );
     }
   }
@@ -1077,19 +1093,19 @@ class _NovaOcorrenciaPageState extends State<NovaOcorrenciaPage> {
 
         setState(() {
           endereco = partes.isEmpty
-              ? (dados['display_name'] ?? 'Endereço não identificado')
+              ? (dados['display_name'] ?? 'EndereÃ§o nÃ£o identificado')
               : partes.join(', ');
         });
       } else {
         setState(() {
-          endereco = 'Não foi possível identificar o endereço';
+          endereco = 'NÃ£o foi possÃ­vel identificar o endereÃ§o';
         });
       }
     } catch (erro) {
       if (!mounted) return;
 
       setState(() {
-        endereco = 'Endereço indisponível no momento';
+        endereco = 'EndereÃ§o indisponÃ­vel no momento';
       });
     }
   }
@@ -1114,9 +1130,9 @@ class _NovaOcorrenciaPageState extends State<NovaOcorrenciaPage> {
       return;
     }
 
-    if (descricaoController.text.isEmpty) {
+    if (descricaoController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Informe uma descrição')),
+        const SnackBar(content: Text('Informe uma descriÃ§Ã£o')),
       );
       return;
     }
@@ -1128,27 +1144,18 @@ class _NovaOcorrenciaPageState extends State<NovaOcorrenciaPage> {
     try {
       final requisicao = http.MultipartRequest(
         'POST',
-        Uri.parse('http://10.0.2.2:8000/ocorrencias/'),
+        Uri.parse('http://192.168.0.247:8000/ocorrencias/'),
       );
 
-      requisicao.headers['Authorization'] =
-      'Bearer ${widget.token}';
-
-      requisicao.fields['categoria_id'] =
-          categoriaSelecionada.toString();
-      requisicao.fields['descricao'] =
-          descricaoController.text;
-      requisicao.fields['latitude'] =
-          widget.posicao.latitude.toString();
-      requisicao.fields['longitude'] =
-          widget.posicao.longitude.toString();
+      requisicao.headers['Authorization'] = 'Bearer ${widget.token}';
+      requisicao.fields['categoria_id'] = categoriaSelecionada.toString();
+      requisicao.fields['descricao'] = descricaoController.text.trim();
+      requisicao.fields['latitude'] = widget.posicao.latitude.toString();
+      requisicao.fields['longitude'] = widget.posicao.longitude.toString();
 
       if (foto != null) {
         requisicao.files.add(
-          await http.MultipartFile.fromPath(
-            'foto',
-            foto!.path,
-          ),
+          await http.MultipartFile.fromPath('foto', foto!.path),
         );
       }
 
@@ -1157,36 +1164,30 @@ class _NovaOcorrenciaPageState extends State<NovaOcorrenciaPage> {
 
       if (!mounted) return;
 
-      if (resposta.statusCode == 200) {
+      if (resposta.statusCode == 200 || resposta.statusCode == 201) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Ocorrência enviada com sucesso')),
+          const SnackBar(content: Text('OcorrÃªncia enviada com sucesso')),
         );
-
         Navigator.pop(context);
-        return;
-      }
+      } else {
+        var mensagem = 'NÃ£o foi possÃ­vel enviar a ocorrÃªncia';
 
-      try {
-        final dados = jsonDecode(corpo);
+        try {
+          final dados = jsonDecode(corpo);
+          mensagem = dados['detail']?.toString() ?? mensagem;
+        } catch (_) {}
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              dados['detail'] ?? 'Não foi possível enviar a ocorrência',
-            ),
-          ),
-        );
-      } catch (erro) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Não foi possível enviar a ocorrência'),
-          ),
+          SnackBar(content: Text(mensagem)),
         );
       }
     } catch (erro) {
       if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Sem conexao. Conecte-se a internet para enviar a ocorrencia.')),
+        const SnackBar(
+          content: Text('Sem conexÃ£o com o servidor. Tente novamente.'),
+        ),
       );
     } finally {
       if (mounted) {
@@ -1201,7 +1202,7 @@ class _NovaOcorrenciaPageState extends State<NovaOcorrenciaPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Nova ocorrência'),
+        title: const Text('Nova ocorrÃªncia'),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -1228,7 +1229,7 @@ class _NovaOcorrenciaPageState extends State<NovaOcorrenciaPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Registrar ocorrência',
+                            'Registrar ocorrÃªncia',
                             style: Theme.of(context)
                                 .textTheme
                                 .titleLarge
@@ -1236,7 +1237,7 @@ class _NovaOcorrenciaPageState extends State<NovaOcorrenciaPage> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'Informe o problema encontrado para enviar a ocorrência.',
+                            'Informe o problema encontrado para enviar a ocorrÃªncia.',
                             style: Theme.of(context).textTheme.bodyMedium,
                           ),
                         ],
@@ -1285,7 +1286,7 @@ class _NovaOcorrenciaPageState extends State<NovaOcorrenciaPage> {
               ),
               const SizedBox(height: 20),
               Text(
-                'Descrição',
+                'DescriÃ§Ã£o',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
@@ -1347,7 +1348,7 @@ class _NovaOcorrenciaPageState extends State<NovaOcorrenciaPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Localização registrada',
+                            'LocalizaÃ§Ã£o registrada',
                             style: Theme.of(context)
                                 .textTheme
                                 .titleMedium
@@ -1385,7 +1386,7 @@ class _NovaOcorrenciaPageState extends State<NovaOcorrenciaPage> {
                   )
                       : const Icon(Icons.send_outlined),
                   label: Text(
-                    enviando ? 'Enviando...' : 'Enviar ocorrência',
+                    enviando ? 'Enviando...' : 'Enviar ocorrÃªncia',
                   ),
                 ),
               ),
@@ -1425,7 +1426,7 @@ class _MinhasOcorrenciasPageState
 
   void conectarWebSocket() {
     canalWebSocket = WebSocketChannel.connect(
-      Uri.parse('ws://10.0.2.2:8000/ws'),
+      Uri.parse('ws://192.168.0.247:8000/ws'),
     );
 
     canalWebSocket.stream.listen(
@@ -1438,7 +1439,8 @@ class _MinhasOcorrenciasPageState
 
           final pertenceAoUsuario = ocorrencias.any(
                 (ocorrencia) =>
-            ocorrencia['id'].toString() == ocorrenciaId,
+            ocorrencia['id'].toString() == ocorrenciaId &&
+                ocorrencia['local'] != true,
           );
 
           atualizarStatusOcorrencia(
@@ -1483,27 +1485,48 @@ class _MinhasOcorrenciasPageState
   Future<void> carregarOcorrencias() async {
     try {
       final resposta = await http.get(
-        Uri.parse('http://10.0.2.2:8000/ocorrencias/'),
+        Uri.parse('http://192.168.0.247:8000/ocorrencias/'),
         headers: {
           'Authorization': 'Bearer ${widget.token}',
         },
       );
 
-      if (!mounted) {
-        return;
-      }
+      if (!mounted) return;
 
       if (resposta.statusCode == 200) {
-        final dados = jsonDecode(resposta.body);
+        final dados = List<Map<String, dynamic>>.from(
+          jsonDecode(resposta.body),
+        );
+
         setState(() {
-          ocorrencias = List<Map<String, dynamic>>.from(dados);
+          ocorrencias = dados;
           carregando = false;
         });
       } else {
-        setState(() => carregando = false);
+        setState(() {
+          carregando = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'NÃ£o foi possÃ­vel carregar as ocorrÃªncias (${resposta.statusCode})',
+            ),
+          ),
+        );
       }
     } catch (erro) {
-      if (mounted) setState(() => carregando = false);
+      if (!mounted) return;
+
+      setState(() {
+        carregando = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Erro de conexÃ£o ao carregar ocorrÃªncias.'),
+        ),
+      );
     }
   }
 
@@ -1530,11 +1553,11 @@ class _MinhasOcorrenciasPageState
       case 'ABERTA':
         return 'Aberta';
       case 'EM_ANALISE':
-        return 'Em análise';
+        return 'Em anÃ¡lise';
       case 'EM_ATENDIMENTO':
         return 'Em atendimento';
       case 'CONCLUIDA':
-        return 'Concluída';
+        return 'ConcluÃ­da';
       case 'PENDENTE':
         return 'Pendente';
       default:
@@ -1569,7 +1592,7 @@ class _MinhasOcorrenciasPageState
         elevation: 0,
         foregroundColor: verde,
         title: const Text(
-          'Minhas ocorrências',
+          'Minhas ocorrÃªncias',
           style: TextStyle(
             fontWeight: FontWeight.bold,
           ),
@@ -1610,7 +1633,7 @@ class _MinhasOcorrenciasPageState
               ),
               const SizedBox(height: 16),
               const Text(
-                'Nenhuma ocorrência encontrada',
+                'Nenhuma ocorrÃªncia encontrada',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -1619,7 +1642,7 @@ class _MinhasOcorrenciasPageState
               ),
               const SizedBox(height: 8),
               const Text(
-                'Suas ocorrências aparecerão aqui.',
+                'Suas ocorrÃªncias aparecerÃ£o aqui.',
                 textAlign: TextAlign.center,
               ),
             ],
@@ -1647,6 +1670,17 @@ class _MinhasOcorrenciasPageState
               child: InkWell(
                 borderRadius: BorderRadius.circular(16),
                 onTap: () {
+                  if (ocorrencia['local'] == true) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'OcorrÃªncia aguardando sincronizaÃ§Ã£o.',
+                        ),
+                      ),
+                    );
+                    return;
+                  }
+
                   abrirDetalhes(ocorrencia['id']);
                 },
                 child: Padding(
@@ -1745,7 +1779,7 @@ class _DetalhesOcorrenciaPageState
     extends State<DetalhesOcorrenciaPage> {
   Map<String, dynamic>? ocorrencia;
   bool carregando = true;
-  String endereco = 'Obtendo endereço...';
+  String endereco = 'Obtendo endereÃ§o...';
 
   @override
   void initState() {
@@ -1776,7 +1810,7 @@ class _DetalhesOcorrenciaPageState
     try {
       final resposta = await http.get(
         Uri.parse(
-          'http://10.0.2.2:8000/ocorrencias/${widget.ocorrenciaId}',
+          'http://192.168.0.247:8000/ocorrencias/${widget.ocorrenciaId}',
         ),
         headers: {
           'Authorization': 'Bearer ${widget.token}',
@@ -1811,7 +1845,7 @@ class _DetalhesOcorrenciaPageState
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            'Não foi possível conectar ao servidor',
+            'NÃ£o foi possÃ­vel conectar ao servidor',
           ),
         ),
       );
@@ -1841,7 +1875,7 @@ class _DetalhesOcorrenciaPageState
           title: const Text('Detalhes'),
         ),
         body: const Center(
-          child: Text('Ocorrência não encontrada'),
+          child: Text('OcorrÃªncia nÃ£o encontrada'),
         ),
       );
     }
@@ -1853,7 +1887,7 @@ class _DetalhesOcorrenciaPageState
       backgroundColor: fundo,
       appBar: AppBar(
         title: const Text(
-          'Detalhes da ocorrência',
+          'Detalhes da ocorrÃªncia',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
@@ -1927,13 +1961,13 @@ class _DetalhesOcorrenciaPageState
             ),
             const SizedBox(height: 16),
             _InfoCard(
-              titulo: 'Descrição',
+              titulo: 'DescriÃ§Ã£o',
               icone: Icons.description_outlined,
               conteudo: ocorrencia!['descricao'].toString(),
             ),
             const SizedBox(height: 16),
             _InfoCard(
-              titulo: 'Localização',
+              titulo: 'LocalizaÃ§Ã£o',
               icone: Icons.location_on_outlined,
               conteudo: endereco,
             ),
@@ -2058,7 +2092,7 @@ class _AdminPageState extends State<AdminPage> {
   Future<void> carregarOcorrencias() async {
     try {
       final resposta = await http.get(
-        Uri.parse('http://10.0.2.2:8000/admin/ocorrencias'),
+        Uri.parse('http://192.168.0.247:8000/admin/ocorrencias'),
         headers: {
           'Authorization': 'Bearer ${widget.token}',
         },
@@ -2085,7 +2119,7 @@ class _AdminPageState extends State<AdminPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
-              'Não foi possível carregar as ocorrências',
+              'NÃ£o foi possÃ­vel carregar as ocorrÃªncias',
             ),
           ),
         );
@@ -2102,7 +2136,7 @@ class _AdminPageState extends State<AdminPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            'Não foi possível conectar ao servidor',
+            'NÃ£o foi possÃ­vel conectar ao servidor',
           ),
         ),
       );
@@ -2116,7 +2150,7 @@ class _AdminPageState extends State<AdminPage> {
     try {
       final resposta = await http.put(
         Uri.parse(
-          'http://10.0.2.2:8000/admin/ocorrencias/$ocorrenciaId/status',
+          'http://192.168.0.247:8000/admin/ocorrencias/$ocorrenciaId/status',
         ).replace(
           queryParameters: {
             'novo_status': novoStatus,
@@ -2150,7 +2184,7 @@ class _AdminPageState extends State<AdminPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
-              'Não foi possível alterar o status',
+              'NÃ£o foi possÃ­vel alterar o status',
             ),
           ),
         );
@@ -2163,7 +2197,7 @@ class _AdminPageState extends State<AdminPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            'Não foi possível conectar ao servidor',
+            'NÃ£o foi possÃ­vel conectar ao servidor',
           ),
         ),
       );
@@ -2174,7 +2208,7 @@ class _AdminPageState extends State<AdminPage> {
     try {
       final resposta = await http.get(
         Uri.parse(
-          'http://10.0.2.2:8000/admin/ocorrencias/$ocorrenciaId/historico',
+          'http://192.168.0.247:8000/admin/ocorrencias/$ocorrenciaId/historico',
         ),
         headers: {
           'Authorization': 'Bearer ${widget.token}',
@@ -2218,7 +2252,7 @@ class _AdminPageState extends State<AdminPage> {
                       ),
                       const SizedBox(height: 18),
                       const Text(
-                        'Histórico da ocorrência',
+                        'HistÃ³rico da ocorrÃªncia',
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -2230,7 +2264,7 @@ class _AdminPageState extends State<AdminPage> {
                         child: dados.isEmpty
                             ? const Center(
                           child: Text(
-                            'Nenhum histórico encontrado',
+                            'Nenhum histÃ³rico encontrado',
                           ),
                         )
                             : ListView.separated(
@@ -2263,7 +2297,7 @@ class _AdminPageState extends State<AdminPage> {
                                       CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          '${nomeStatus(item['status_anterior'].toString())} → '
+                                          '${nomeStatus(item['status_anterior'].toString())} â†’ '
                                               '${nomeStatus(statusNovo)}',
                                           style: const TextStyle(
                                             fontWeight: FontWeight.w600,
@@ -2303,7 +2337,7 @@ class _AdminPageState extends State<AdminPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
-              'Não foi possível carregar o histórico',
+              'NÃ£o foi possÃ­vel carregar o histÃ³rico',
             ),
           ),
         );
@@ -2316,7 +2350,7 @@ class _AdminPageState extends State<AdminPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            'Não foi possível conectar ao servidor',
+            'NÃ£o foi possÃ­vel conectar ao servidor',
           ),
         ),
       );
@@ -2378,7 +2412,7 @@ class _AdminPageState extends State<AdminPage> {
       )
           : ocorrencias.isEmpty
           ? const Center(
-        child: Text('Nenhuma ocorrência encontrada'),
+        child: Text('Nenhuma ocorrÃªncia encontrada'),
       )
           : ListView.builder(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
@@ -2474,7 +2508,7 @@ class _AdminPageState extends State<AdminPage> {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(14),
                       child: Image.network(
-                        'http://10.0.2.2:8000$fotoUrl',
+                        'http://192.168.0.247:8000$fotoUrl',
                         width: double.infinity,
                         height: 180,
                         fit: BoxFit.cover,
@@ -2497,7 +2531,7 @@ class _AdminPageState extends State<AdminPage> {
                   const SizedBox(height: 14),
                   _AdminInfoLine(
                     icon: Icons.person_outline,
-                    text: 'Usuário: ${ocorrencia['usuario']}',
+                    text: 'UsuÃ¡rio: ${ocorrencia['usuario']}',
                   ),
                   const SizedBox(height: 7),
                   _AdminInfoLine(
@@ -2508,7 +2542,7 @@ class _AdminPageState extends State<AdminPage> {
                   _AdminInfoLine(
                     icon: Icons.location_on_outlined,
                     text: enderecos[id] ??
-                        'Obtendo endereço...',
+                        'Obtendo endereÃ§o...',
                   ),
                   const SizedBox(height: 16),
                   DropdownButtonFormField<String>(
@@ -2566,7 +2600,7 @@ class _AdminPageState extends State<AdminPage> {
                         ),
                       ),
                       icon: const Icon(Icons.history),
-                      label: const Text('Ver histórico'),
+                      label: const Text('Ver histÃ³rico'),
                     ),
                   ),
                 ],
@@ -2749,7 +2783,7 @@ class _AdminMapaPageState extends State<AdminMapaPage> {
                   const SizedBox(height: 20),
                   _AdminInfoLine(
                     icon: Icons.person_outline,
-                    text: 'Usuário: ${ocorrencia['usuario']}',
+                    text: 'UsuÃ¡rio: ${ocorrencia['usuario']}',
                   ),
                   const SizedBox(height: 8),
                   _AdminInfoLine(
@@ -2759,7 +2793,7 @@ class _AdminMapaPageState extends State<AdminMapaPage> {
                   const SizedBox(height: 8),
                   _AdminInfoLine(
                     icon: Icons.location_on_outlined,
-                    text: enderecos[id] ?? 'Obtendo endereço...',
+                    text: enderecos[id] ?? 'Obtendo endereÃ§o...',
                   ),
                   if (ocorrencia['created_at'] != null) ...[
                     const SizedBox(height: 8),
@@ -2807,12 +2841,12 @@ class _AdminMapaPageState extends State<AdminMapaPage> {
         backgroundColor: fundo,
         appBar: AppBar(
           title: const Text(
-            'Mapa das ocorrências',
+            'Mapa das ocorrÃªncias',
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
         ),
         body: const Center(
-          child: Text('Nenhuma ocorrência encontrada'),
+          child: Text('Nenhuma ocorrÃªncia encontrada'),
         ),
       );
     }
@@ -2832,7 +2866,7 @@ class _AdminMapaPageState extends State<AdminMapaPage> {
       backgroundColor: fundo,
       appBar: AppBar(
         title: const Text(
-          'Mapa das ocorrências',
+          'Mapa das ocorrÃªncias',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
@@ -2934,7 +2968,7 @@ class _AdminMapaPageState extends State<AdminMapaPage> {
                   Expanded(
                     child: Text(
                       '${widget.ocorrencias.length} '
-                          '${widget.ocorrencias.length == 1 ? 'ocorrência' : 'ocorrências'} no mapa',
+                          '${widget.ocorrencias.length == 1 ? 'ocorrÃªncia' : 'ocorrÃªncias'} no mapa',
                       style: const TextStyle(
                         fontWeight: FontWeight.w600,
                       ),
@@ -2949,5 +2983,3 @@ class _AdminMapaPageState extends State<AdminMapaPage> {
     );
   }
 }
-
-
