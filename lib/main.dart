@@ -10,7 +10,6 @@ import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
-import 'database/database.dart';
 
 final FlutterLocalNotificationsPlugin notificacoes =
 FlutterLocalNotificationsPlugin();
@@ -220,12 +219,12 @@ class _LoginPageState extends State<LoginPage> {
 
     try {
       final resposta = await http.post(
-        Uri.parse('http://10.0.2.2:8000/auth/login').replace(
-          queryParameters: {
-            'email': emailController.text,
-            'senha': senhaController.text,
-          },
-        ),
+        Uri.parse('http://10.0.2.2:8000/auth/login'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'email': emailController.text,
+          'senha': senhaController.text,
+        }),
       );
 
       final dados = jsonDecode(resposta.body);
@@ -481,13 +480,13 @@ class _CadastroPageState extends State<CadastroPage> {
 
     try {
       final resposta = await http.post(
-        Uri.parse('http://10.0.2.2:8000/auth/register').replace(
-          queryParameters: {
-            'nome': nomeController.text,
-            'email': emailController.text,
-            'senha': senhaController.text,
-          },
-        ),
+        Uri.parse('http://10.0.2.2:8000/auth/register'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'nome': nomeController.text,
+          'email': emailController.text,
+          'senha': senhaController.text,
+        }),
       );
 
       final dados = jsonDecode(resposta.body);
@@ -1016,49 +1015,21 @@ class _NovaOcorrenciaPageState extends State<NovaOcorrenciaPage> {
       final resposta = await http.get(
         Uri.parse('http://10.0.2.2:8000/categorias/'),
       );
-
       if (!mounted) return;
-
       if (resposta.statusCode == 200) {
-        final dados = List<Map<String, dynamic>>.from(
-          jsonDecode(resposta.body),
-        );
-
-        await DatabaseHelper.salvarCategorias(dados);
-
-        if (!mounted) return;
-
         setState(() {
-          categorias = dados;
+          categorias = List<Map<String, dynamic>>.from(jsonDecode(resposta.body));
           carregandoCategorias = false;
         });
       } else {
-        final categoriasLocais = await DatabaseHelper.listarCategorias();
-
-        if (!mounted) return;
-
-        setState(() {
-          categorias = categoriasLocais;
-          carregandoCategorias = false;
-        });
+        setState(() => carregandoCategorias = false);
       }
     } catch (erro) {
-      final categoriasLocais = await DatabaseHelper.listarCategorias();
-
       if (!mounted) return;
-
-      setState(() {
-        categorias = categoriasLocais;
-        carregandoCategorias = false;
-      });
-
-      if (categoriasLocais.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Não foi possível carregar as categorias'),
-          ),
-        );
-      }
+      setState(() => carregandoCategorias = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Nao foi possivel carregar as categorias')),
+      );
     }
   }
 
@@ -1133,28 +1104,6 @@ class _NovaOcorrenciaPageState extends State<NovaOcorrenciaPage> {
         foto = imagem;
       });
     }
-  }
-
-  Future<void> salvarOcorrenciaOffline() async {
-    await DatabaseHelper.inserirOcorrencia({
-      'categoria_id': categoriaSelecionada,
-      'descricao': descricaoController.text,
-      'latitude': widget.posicao.latitude,
-      'longitude': widget.posicao.longitude,
-      'foto_path': foto?.path,
-      'sincronizada': 0,
-      'created_at': DateTime.now().toIso8601String(),
-    });
-
-    if (!mounted) return;
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Ocorrência salva no dispositivo para sincronização'),
-      ),
-    );
-
-    Navigator.pop(context);
   }
 
   Future<void> enviarOcorrencia() async {
@@ -1235,25 +1184,10 @@ class _NovaOcorrenciaPageState extends State<NovaOcorrenciaPage> {
         );
       }
     } catch (erro) {
-      await DatabaseHelper.inserirOcorrencia({
-        'categoria_id': categoriaSelecionada,
-        'descricao': descricaoController.text,
-        'latitude': widget.posicao.latitude,
-        'longitude': widget.posicao.longitude,
-        'foto_path': foto?.path,
-        'sincronizada': 0,
-        'created_at': DateTime.now().toIso8601String(),
-      });
-
       if (!mounted) return;
-
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Sem conexão. Ocorrência salva para sincronização.'),
-        ),
+        const SnackBar(content: Text('Sem conexao. Conecte-se a internet para enviar a ocorrencia.')),
       );
-
-      Navigator.pop(context);
     } finally {
       if (mounted) {
         setState(() {
@@ -1504,8 +1438,7 @@ class _MinhasOcorrenciasPageState
 
           final pertenceAoUsuario = ocorrencias.any(
                 (ocorrencia) =>
-            ocorrencia['id'].toString() == ocorrenciaId &&
-                ocorrencia['local'] != true,
+            ocorrencia['id'].toString() == ocorrenciaId,
           );
 
           atualizarStatusOcorrencia(
@@ -1547,78 +1480,8 @@ class _MinhasOcorrenciasPageState
     });
   }
 
-  Future<void> sincronizarOcorrencias() async {
-    final ocorrenciasLocais =
-    await DatabaseHelper.listarOcorrenciasNaoSincronizadas();
-
-    for (final ocorrencia in ocorrenciasLocais) {
-      try {
-        final requisicao = http.MultipartRequest(
-          'POST',
-          Uri.parse('http://10.0.2.2:8000/ocorrencias/'),
-        );
-
-        requisicao.headers['Authorization'] =
-        'Bearer ${widget.token}';
-
-        requisicao.fields['categoria_id'] =
-            ocorrencia['categoria_id'].toString();
-        requisicao.fields['descricao'] =
-            ocorrencia['descricao'].toString();
-        requisicao.fields['latitude'] =
-            ocorrencia['latitude'].toString();
-        requisicao.fields['longitude'] =
-            ocorrencia['longitude'].toString();
-
-        final fotoPath = ocorrencia['foto_path']?.toString();
-
-        if (fotoPath != null && fotoPath.isNotEmpty) {
-          requisicao.files.add(
-            await http.MultipartFile.fromPath(
-              'foto',
-              fotoPath,
-            ),
-          );
-        }
-
-        final resposta = await requisicao.send();
-
-        if (resposta.statusCode == 200) {
-          await DatabaseHelper.marcarOcorrenciaSincronizada(
-            ocorrencia['id'] as int,
-          );
-        }
-      } catch (erro) {
-        return;
-      }
-    }
-  }
-
-  Future<void> carregarOcorrenciasLocais() async {
-    final locais = await DatabaseHelper.listarOcorrencias();
-
-    if (!mounted) {
-      return;
-    }
-
-    setState(() {
-      ocorrencias = locais.map((ocorrencia) {
-        return {
-          'id': 'local_${ocorrencia['id']}',
-          'categoria': ocorrencia['categoria'] ?? 'Categoria',
-          'descricao': ocorrencia['descricao'],
-          'status': 'PENDENTE',
-          'local': true,
-        };
-      }).toList();
-      carregando = false;
-    });
-  }
-
   Future<void> carregarOcorrencias() async {
     try {
-      await sincronizarOcorrencias();
-
       final resposta = await http.get(
         Uri.parse('http://10.0.2.2:8000/ocorrencias/'),
         headers: {
@@ -1632,33 +1495,15 @@ class _MinhasOcorrenciasPageState
 
       if (resposta.statusCode == 200) {
         final dados = jsonDecode(resposta.body);
-        final locais = await DatabaseHelper.listarOcorrencias();
-
-        final ocorrenciasServidor =
-        List<Map<String, dynamic>>.from(dados);
-
-        final ocorrenciasPendentes = locais.map((ocorrencia) {
-          return {
-            'id': 'local_${ocorrencia['id']}',
-            'categoria': ocorrencia['categoria'] ?? 'Categoria',
-            'descricao': ocorrencia['descricao'],
-            'status': 'PENDENTE',
-            'local': true,
-          };
-        }).toList();
-
         setState(() {
-          ocorrencias = [
-            ...ocorrenciasPendentes,
-            ...ocorrenciasServidor,
-          ];
+          ocorrencias = List<Map<String, dynamic>>.from(dados);
           carregando = false;
         });
       } else {
-        await carregarOcorrenciasLocais();
+        setState(() => carregando = false);
       }
     } catch (erro) {
-      await carregarOcorrenciasLocais();
+      if (mounted) setState(() => carregando = false);
     }
   }
 
@@ -1802,17 +1647,6 @@ class _MinhasOcorrenciasPageState
               child: InkWell(
                 borderRadius: BorderRadius.circular(16),
                 onTap: () {
-                  if (ocorrencia['local'] == true) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'Ocorrência aguardando sincronização.',
-                        ),
-                      ),
-                    );
-                    return;
-                  }
-
                   abrirDetalhes(ocorrencia['id']);
                 },
                 child: Padding(

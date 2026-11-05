@@ -76,11 +76,11 @@ O RabbitMQ será utilizado para comunicação assíncrona entre os componentes d
 
 O Docker será utilizado para executar os serviços necessários para o sistema.
 
-### Armazenamento local
+### Banco remoto e armazenamento local
 
-- SQLite
-
-O SQLite será utilizado para armazenar dados localmente e possibilitar o funcionamento offline da aplicação.
+- Neon PostgreSQL + PostGIS para persistir usuarios e ocorrencias no backend.
+- O app Flutter nao mantem banco local; precisa de conexao com a API para enviar e consultar ocorrencias.
+- Veja [backend/NEON.md](backend/NEON.md) para configurar o banco e criar o schema.
 
 ## 🧩 Arquitetura
 

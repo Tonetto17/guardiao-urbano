@@ -2,6 +2,7 @@ from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, HTTPException
 from jose import jwt
+from pydantic import BaseModel
 from pwdlib import PasswordHash
 
 from database.connection import get_connection
@@ -13,16 +14,28 @@ SECRET_KEY = "guardiao-urbano-chave-secreta"
 ALGORITHM = "HS256"
 TOKEN_EXPIRE_MINUTES = 60
 
+
+class CadastroRequest(BaseModel):
+    nome: str
+    email: str
+    senha: str
+
+
+class LoginRequest(BaseModel):
+    email: str
+    senha: str
+
+
 @router.post("/register")
-def register(nome: str, email: str, senha: str):
-    senha_hash = password_hash.hash(senha)
+def register(dados: CadastroRequest):
+    senha_hash = password_hash.hash(dados.senha)
 
     connection = get_connection()
     cursor = connection.cursor()
 
     cursor.execute(
         "INSERT INTO usuarios (id, nome, email, senha, tipo) VALUES (gen_random_uuid(), %s, %s, %s, %s)",
-        (nome, email, senha_hash, "CIDADAO")
+        (dados.nome, dados.email, senha_hash, "CIDADAO")
     )
 
     connection.commit()
@@ -32,13 +45,13 @@ def register(nome: str, email: str, senha: str):
     return {"message": "Usuário cadastrado"}
 
 @router.post("/login")
-def login(email: str, senha: str):
+def login(dados: LoginRequest):
     connection = get_connection()
     cursor = connection.cursor()
 
     cursor.execute(
         "SELECT id, nome, senha, tipo FROM usuarios WHERE email = %s",
-        (email,)
+        (dados.email,)
     )
 
     usuario = cursor.fetchone()
@@ -49,7 +62,7 @@ def login(email: str, senha: str):
     if not usuario:
         raise HTTPException(status_code=401, detail="Email ou senha inválidos")
 
-    if not password_hash.verify(senha, usuario[2]):
+    if not password_hash.verify(dados.senha, usuario[2]):
         raise HTTPException(status_code=401, detail="Email ou senha inválidos")
 
     payload = {
@@ -67,7 +80,7 @@ def login(email: str, senha: str):
         "usuario": {
             "id": str(usuario[0]),
             "nome": usuario[1],
-            "email": email,
+            "email": dados.email,
             "tipo": usuario[3]
         }
     }

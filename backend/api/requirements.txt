@@ -5,3 +5,5 @@ python-jose[cryptography]
 pwdlib[argon2]
 pika
 redis
+python-dotenv
+python-multipart

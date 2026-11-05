@@ -1,10 +1,14 @@
+import os
+
 import psycopg
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 def get_connection():
-    return psycopg.connect(
-        host="127.0.0.1",
-        port=5432,
-        dbname="guardiao_urbano",
-        user="guardiao",
-        password="guardiao"
-    )
+    database_url = os.getenv("DATABASE_URL")
+    if not database_url:
+        raise RuntimeError("DATABASE_URL nao configurada")
+
+    return psycopg.connect(database_url, sslmode="require")
