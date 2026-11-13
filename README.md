@@ -1,102 +1,143 @@
-# GuardiãoUrbano
+# Guardião Urbano
 
 Aplicativo mobile colaborativo para denúncia e acompanhamento de problemas ambientais urbanos.
 
 ## 📱 Sobre o projeto
 
-O GuardiãoUrbano é um aplicativo desenvolvido como parte das Atividades Práticas Supervisionadas (APS) da disciplina de Desenvolvimento de Sistemas Distribuídos.
+O Guardião Urbano é um aplicativo desenvolvido como parte das Atividades Práticas Supervisionadas (APS) da disciplina de Desenvolvimento de Sistemas Distribuídos.
 
-O aplicativo permite que usuários registrem problemas ambientais encontrados em áreas urbanas, utilizando fotografia, localização e informações sobre a ocorrência.
+O aplicativo permite que os usuários registrem problemas ambientais encontrados em áreas urbanas, utilizando fotografias, localização geográfica, categorias e descrições para documentar cada ocorrência.
 
-As ocorrências são enviadas para o servidor, onde podem ser armazenadas, processadas e analisadas por um administrador
+As informações podem ser armazenadas localmente no dispositivo e enviadas ao servidor por meio de uma API, permitindo o gerenciamento e acompanhamento das ocorrências.
 
 ## 🎯 Objetivo
 
-Facilitar o registro e acompanhamento de problemas ambientais urbanos por meio de uma aplicação mobile integrada a uma arquitetura de sistemas distribuídos.
+Facilitar o registro e o acompanhamento de problemas ambientais urbanos por meio de uma aplicação mobile integrada a uma arquitetura de sistemas distribuídos.
 
 ## 🌱 Tipos de ocorrências
 
-O aplicativo poderá registrar ocorrências como:
+O aplicativo contempla o registro de problemas ambientais, como:
 
-- Lixo irregular
-- Descarte de entulho
-- Queimada
-- Árvore caída
-- Desmatamento
-- Esgoto irregular
-- Poluição de rios
-- Terrenos abandonados
+- Lixo irregular;
+- Descarte de entulho;
+- Queimadas;
+- Árvores caídas;
+- Desmatamento;
+- Esgoto irregular;
+- Poluição de rios;
+- Terrenos abandonados.
 
 ## 🔄 Funcionamento
 
-O fluxo principal da aplicação será:
+O fluxo principal da aplicação é organizado da seguinte maneira:
 
-1. O usuário encontra um problema ambiental.
-2. Registra uma fotografia.
-3. O aplicativo obtém a localização.
-4. Seleciona a categoria do problema.
-5. Adiciona uma descrição.
-6. Envia a ocorrência.
-7. O servidor recebe e processa os dados.
-8. A ocorrência é armazenada.
-9. O administrador analisa a ocorrência.
-10. O status é atualizado.
-11. O usuário acompanha o andamento da ocorrência.
+1. O usuário identifica um problema ambiental.
+2. Realiza o registro de uma fotografia.
+3. O aplicativo obtém as coordenadas geográficas da ocorrência.
+4. O usuário seleciona a categoria correspondente.
+5. Adiciona uma descrição do problema.
+6. O aplicativo organiza e armazena os dados da ocorrência.
+7. Os dados são enviados ao backend por meio de uma requisição à API.
+8. O servidor recebe e processa as informações.
+9. As ocorrências são armazenadas no banco de dados remoto.
+10. O administrador pode analisar e atualizar o andamento das ocorrências.
+11. O usuário pode acompanhar o status dos registros.
 
 ## 🏗️ Tecnologias
 
 ### Aplicativo Mobile
 
-- Flutter
-- Dart
-- Android Studio
-- Android
+- **Flutter:** framework utilizado para o desenvolvimento da aplicação mobile.
+- **Dart:** linguagem de programação utilizada no aplicativo.
+- **Android Studio:** ambiente de desenvolvimento.
+- **Android:** plataforma de execução do aplicativo.
 
 ### Backend
 
-- Node.js
-- TypeScript
+- **Node.js:** ambiente de execução do servidor.
+- **TypeScript:** linguagem utilizada para desenvolvimento do backend.
 
 ### Banco de Dados
 
-- PostgreSQL
-- PostGIS
+- **PostgreSQL:** banco de dados relacional utilizado para armazenar as informações.
+- **PostGIS:** extensão do PostgreSQL utilizada para trabalhar com dados geográficos.
+- **Neon PostgreSQL:** serviço utilizado para disponibilização do banco de dados remoto.
 
-O PostGIS será utilizado para trabalhar com as informações geográficas das ocorrências.
+### Armazenamento Local
+
+- **SQLite:** banco de dados local utilizado para armazenar informações no dispositivo.
+- **DatabaseHelper:** classe responsável pela inicialização do banco, criação das tabelas e operações de inserção, consulta e atualização.
+
+As principais tabelas locais são:
+
+- `ocorrencias_offline`: armazena descrição, categoria, coordenadas geográficas, caminho da fotografia e data de criação das ocorrências.
+- `categorias_offline`: armazena as informações utilizadas para identificar e classificar os tipos de ocorrência.
 
 ### Mensageria
 
-- RabbitMQ
-
-O RabbitMQ será utilizado para comunicação assíncrona entre os componentes do sistema.
+- **RabbitMQ:** ferramenta de mensageria utilizada na arquitetura para permitir a comunicação assíncrona entre componentes do sistema.
 
 ### Infraestrutura
 
-- Docker
+- **Docker:** utilizado para facilitar a configuração e execução dos serviços necessários ao ambiente de desenvolvimento.
 
-O Docker será utilizado para executar os serviços necessários para o sistema.
+## 🧩 Arquitetura do Sistema
 
-### Banco remoto e armazenamento local
+A aplicação utiliza uma arquitetura distribuída, separando as responsabilidades entre o aplicativo mobile, o backend, os serviços de mensageria e o banco de dados.
 
-- Neon PostgreSQL + PostGIS para persistir usuarios e ocorrencias no backend.
-- O app Flutter nao mantem banco local; precisa de conexao com a API para enviar e consultar ocorrencias.
-- Veja [backend/NEON.md](backend/NEON.md) para configurar o banco e criar o schema.
-
-## 🧩 Arquitetura
-
-A comunicação principal do sistema será organizada da seguinte forma:
+O fluxo de comunicação é organizado da seguinte forma:
 
 ```text
 Aplicativo Flutter
-       │
-       ▼
-    API Backend
-       │
-       ▼
-    RabbitMQ
-       │
-       ▼
- Processamento
-       │
-       ▼
+       |
+       v
+Armazenamento Local (SQLite)
+       |
+       v
+API Backend
+(Node.js / TypeScript)
+       |
+       v
+RabbitMQ
+       |
+       v
+Processamento das Ocorrências
+       |
+       v
 PostgreSQL + PostGIS
+       |
+       v
+Banco de Dados Remoto
+```
+
+### Comunicação entre os componentes
+
+O aplicativo Flutter é responsável pela interface e pela interação com o usuário, permitindo registrar ocorrências e organizar as informações coletadas.
+
+O SQLite possibilita o armazenamento local dos dados, enquanto a API realiza a comunicação entre o aplicativo e o servidor.
+
+O backend concentra o processamento das informações e a integração com o banco de dados remoto. O RabbitMQ permite a comunicação assíncrona entre os componentes, contribuindo para a organização do processamento das ocorrências.
+
+O PostgreSQL, integrado ao PostGIS, permite armazenar e consultar os registros, incluindo suas informações geográficas.
+
+## 💾 Persistência e Gerenciamento de Dados
+
+O sistema trabalha com armazenamento local e remoto.
+
+No dispositivo mobile, o SQLite é utilizado para manter os registros locais das ocorrências. As operações são centralizadas na classe `DatabaseHelper`, responsável pelo gerenciamento das tabelas e dos dados.
+
+No ambiente remoto, o PostgreSQL com PostGIS é responsável pela persistência das informações recebidas pelo backend.
+
+Essa organização permite separar o armazenamento realizado no dispositivo do gerenciamento centralizado no servidor.
+
+## 🐳 Infraestrutura com Docker
+
+O Docker é utilizado para facilitar a configuração do ambiente de desenvolvimento e a execução dos serviços que compõem a infraestrutura do sistema.
+
+A utilização de contêineres contribui para manter os serviços organizados e facilitar sua execução em diferentes ambientes.
+
+## 📌 Considerações Finais
+
+O Guardião Urbano busca aplicar conceitos de desenvolvimento mobile, persistência de dados, comunicação entre serviços e arquitetura distribuída.
+
+A integração entre Flutter, backend, banco de dados e mensageria permite organizar as diferentes responsabilidades da aplicação, oferecendo uma solução para o registro e acompanhamento de problemas ambientais urbanos.
